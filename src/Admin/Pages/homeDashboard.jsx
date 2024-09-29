@@ -182,7 +182,7 @@ function MainScreen() {
             <FcStatistics className="inline-block text-yellow-300 text-3xl" />
             Statistics
           </h2>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4 max-sm:grid-cols-1">
             {card({
               icon: BiFootball,
               number: numberOfGrounds,
@@ -206,8 +206,8 @@ function MainScreen() {
           </div>
         </div>
       </div>
-      <div className="flex items-start justify-center gap-10 p-10 max-h-80">
-        <div className="w-2/4 h-96 p-4 rounded-lg">
+      <div className="flex items-start justify-center gap-10 p-10 lg:max-h-80 max-sm:flex-col">
+        <div className="w-2/4 h-96 p-4 rounded-lg max-sm:w-full">
           <h2 className="text-left text-xl font-bold flex items-center gap-2">
             <IoMdNotifications className="inline-block text-yellow-300 text-3xl" />
             Reminders
@@ -234,7 +234,7 @@ function MainScreen() {
             ))}
           </div>
         </div>
-        <div className="w-2/4">
+        <div className="w-2/4 max-sm:hidden">
           <table className="table-auto overflow-y-auto mx-auto">
             <thead>
               <tr>

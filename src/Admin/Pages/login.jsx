@@ -5,13 +5,13 @@ import bg1 from "../../assets/bg1.jpg";
 const Login = () => {
   return (
     <div className="">
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen max-sm:flex-col">
         <div
-          className="top-0 left-0 h-full bg-cover bg-center w-1/2"
+          className="top-0 left-0 h-full bg-cover bg-center w-1/2 max-sm:w-full"
           style={{ backgroundImage: `url(${bg1})` }}
         ></div>
 
-        <div className="p-10 bg-white shadow-lg rounded-lg w-1/2 m-10">
+        <div className="p-10 bg-white shadow-lg rounded-lg w-1/2 m-10 max-sm:w-full">
           <h1 className="text-2xl font-bold text-center">Login</h1>
           <ThemeControl />
           <form className="mt-5">
@@ -43,12 +43,15 @@ const Login = () => {
             <button
               type="submit"
               className="w-full py-2 px-4 bg-accent hover:bg-accent focus:ring-4 focus:ring-accent focus:outline-none text-white font-medium text-sm rounded-md shadow-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.href = "/admin";
+              }}
             >
               Login
             </button>
             <p className="mt-3 text-center">
-              If you don't have an account?{" "}
-              Please contact the technical team.
+              If you don't have an account? Please contact the technical team.
             </p>
           </form>
         </div>

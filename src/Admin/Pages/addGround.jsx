@@ -66,7 +66,7 @@ const AddGround = () => {
   });
 
   return (
-    <div className="p-20">
+    <div className="p-20 max-sm:p-5">
       <ThemeControl />
       <AdminSiderbar />
       <div className="grid grid-cols-2 gap-4 mt-4">

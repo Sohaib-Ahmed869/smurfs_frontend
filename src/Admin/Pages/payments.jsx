@@ -227,11 +227,11 @@ const Payments = () => {
     <div>
       <div className="flex">
         <AdminSiderbar />
-        <div className="w-full p-20">
+        <div className="w-full p-20 max-sm:p-5">
           <ThemeControl />
           <h1 className="text-4xl mt-4 mb-4 main-heading">Payments</h1>
 
-          <div className="grid grid-cols-3 mt-10 mb-10 gap-10">
+          <div className="grid grid-cols-3 mt-10 mb-10 gap-10 max-sm:grid-cols-1">
             <div className="bg-white p-4 rounded-lg shadow-md">
               <h1 className="text-2xl font-bold">Rs. {total}</h1>
               <h1 className="text-md font-bold">Total Amount</h1>

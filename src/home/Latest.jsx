@@ -5,11 +5,11 @@ const Latest = () => {
   return (
     <div>
       <div className="bg-black">
-        <div className="flex items-center justify-between p-20">
-          <div className="w-1/2 flex items-center justify-center">
+        <div className="flex items-center justify-between p-20 max-sm:p-10 max-sm:flex-col gap-10">
+          <div className="w-1/2 flex items-center justify-center max-sm:w-full">
             <img src={scholarships} alt="scholarships" className="h-[500px]" />
           </div>
-          <div className="w-1/2">
+          <div className="w-1/2 max-sm:w-full max-sm:mt-10">
             <h1 className="text-4xl text-white main-heading">
               Latest Scholarships
             </h1>

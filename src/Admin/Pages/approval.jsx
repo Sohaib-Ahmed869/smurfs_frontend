@@ -51,7 +51,7 @@ const Approval = () => {
     <div>
       <div className="flex">
         <AdminSiderbar />
-        <div className="w-full p-20">
+        <div className="w-full p-20 max-sm:p-5">
           <ThemeControl />
           <h1 className="text-4xl mt-4 mb-4 main-heading">Booking Requests</h1>
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 sm:grid-cols-1">

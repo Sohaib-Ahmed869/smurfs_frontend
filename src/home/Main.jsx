@@ -1,4 +1,5 @@
 import React from "react";
+import { Modal } from "react-bootstrap";
 import ThemeControl from "../components/ThemeControl";
 import ground from "../assets/groundedited.jpg";
 import groundnight from "../assets/groundnight.jpg";
@@ -11,6 +12,7 @@ import { IoCall } from "react-icons/io5";
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
 
 const Main = () => {
+ 
   return (
     <div>
       <div
@@ -22,21 +24,21 @@ const Main = () => {
           height: "100vh",
         }}
       >
-        <div className="flex items-center justify-between p-20">
+        <div className="flex items-center justify-between p-20 max-sm:p-1">
           <img src={logo} alt="logo" className="h-36" />
           <ThemeControl />
-          <button className="btn btn-primary rounded-full">Book a Spot</button>
+          <button className="btn btn-primary rounded-full max-sm:hidden">Book a Spot</button>
         </div>
-        <div className="flex flex-col items-center text-center p-20">
-          <h1 className="text-6xl text-white main-heading">
+        <div className="flex flex-col items-center text-center p-20 max-sm:p-10">
+          <h1 className="text-6xl text-white main-heading max-sm:text-4xl">
             Welcome to The Smurfs Football Club
           </h1>
-          <p className="text-white text-xl mt-4">
+          <p className="text-white text-xl mt-4 max-sm:text-md">
             We are a football club based in the heart of the city. <br></br>We
             have a state of the art football ground with all the facilities you
             need to enjoy the beautiful game.
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 max-sm:flex-col">
             <button className="btn btn-primary rounded-full mt-4 text-md">
               <IoCall className="mr-2" />
               Call Us Now
@@ -49,8 +51,8 @@ const Main = () => {
         </div>
       </div>
       <div className="bg-black text-white">
-        <div className="flex items-center justify-between p-20">
-          <div className="w-1/2">
+        <div className="flex items-center justify-between p-20 max-sm:p-10">
+          <div className="w-1/2 max-sm:w-full">
             <h1 className="text-4xl main-heading">
               The Biggest Football Academy in Pakistan
             </h1>
@@ -67,16 +69,17 @@ const Main = () => {
               field.
             </p>
           </div>
-          <div className="w-1/2 flex items-center justify-center">
+          <div className="w-1/2 flex items-center justify-center max-sm:hidden">
             <img src={logo} alt="logo" className="h-[300px]" />
           </div>
         </div>
       </div>
-      <div className="w-full p-20 bg-black">
+      <div className="w-full p-20 max-sm:p-10 bg-black">
         <CTA />
       </div>
       <Latest />
       <Footer />
+      
     </div>
   );
 };

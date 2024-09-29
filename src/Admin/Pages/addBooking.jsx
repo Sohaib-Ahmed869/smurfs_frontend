@@ -136,11 +136,11 @@ const AddBooking = () => {
   }, [selectedGround]);
 
   return (
-    <div className="p-20">
+    <div className="p-20 max-sm:p-5">
       <ThemeControl />
       <AdminSiderbar />
-      <div className="flex items-center justify-between gap-10">
-        <div className="mt-4 w-1/2 border p-4 rounded-xl shadow-sm">
+      <div className="flex items-center justify-between gap-10 max-sm:flex-col max-sm:flex-col-reverse">
+        <div className="mt-4 w-1/2 border p-4 rounded-xl shadow-sm max-sm:w-full">
           <h1 className="text-2xl font-bold">Ground Information</h1>
           <table className="table w-full mt-4">
             <tbody>
@@ -183,7 +183,7 @@ const AddBooking = () => {
             </tbody>
           </table>
         </div>
-        <div className="mt-4 w-1/2">
+        <div className="mt-4 w-1/2 max-sm:w-full">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Add Booking</h1>
             <button className="btn btn-primary" onClick={handleSave}>
@@ -224,7 +224,7 @@ const AddBooking = () => {
           </div>
         </div>
       </div>
-      <div className="mt-10">
+      <div className="mt-10 max-sm:hidden">
         <h1 className="text-2xl font-bold">Reminders</h1>
         <table className="table w-full mt-4">
           <thead>
