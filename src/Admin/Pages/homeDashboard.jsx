@@ -3,108 +3,15 @@ import { IoMdNotifications } from "react-icons/io";
 import { TbPointFilled } from "react-icons/tb";
 import ThemeControl from "../../components/ThemeControl";
 import SmurfsLoader from "../../components/smurfsLoader";
-import AdminSiderbar from '../Components/siderbar';
+import AdminSiderbar from "../Components/siderbar";
 import logo from "../../assets/logobg.jpeg";
 import { BiFootball } from "react-icons/bi";
 import { SiCrowdin } from "react-icons/si";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { AiOutlineDollar } from "react-icons/ai";
 import { FcStatistics } from "react-icons/fc";
+import AdminServices from "../../Services/AdminServices";
 
-
-const grounds = [
-  {
-    name: "Askari 4",
-    location: "Askari 4",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3500,
-    reserved_timings: "05:00 PM - 06:30 PM",
-    weekday_with_light: 2800,
-    weekday_without_light: 2500,
-    weekend_after_midnight: 4000,
-  },
-  {
-    name: "Rad Arena Askari 10",
-    location: "Askari 10",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3000,
-    reserved_timings: "07:00 AM - 03:00 PM",
-    weekday_with_light: 3000,
-    weekday_without_light: 3000,
-    weekend_after_midnight: 3000,
-  },
-  {
-    name: "Askari 2",
-    location: "Askari 2",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 2400,
-    reserved_timings: "05:00 PM - 07:00 PM",
-    weekday_with_light: 2400,
-    weekday_without_light: 2000,
-    weekend_after_midnight: 2400,
-  },
-  {
-    name: "DHA-1 Roots",
-    location: "DHA-1 Roots",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3600,
-    reserved_timings: "07:00 AM - 03:00 PM",
-    weekday_with_light: 3600,
-    weekday_without_light: 3000,
-    weekend_after_midnight: 3200,
-  },
-];
-
-const Reminders = [
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 10",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "25th September 2024",
-    ground: "Askari 2",
-    customerName: "John Doe",
-    price: 500,
-  },
-];
 const card = (props) => {
   return (
     <div className="border-2 border-yellow-700 p-10 my-4 rounded-xl shadow-lg w-full flex justify-between items-center">
@@ -117,6 +24,7 @@ const card = (props) => {
   );
 };
 function MainScreen() {
+  const [grounds, setGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,9 +34,68 @@ function MainScreen() {
 
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const currentGrounds = grounds.slice(indexOfFirstItem, indexOfLastItem);
+  const [currentGrounds, setCurrentGrounds] = useState([]);
 
-  const totalPages = Math.ceil(grounds.length / itemsPerPage);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const [numberOfGrounds, setNumberOfGrounds] = useState(0);
+  const [totalBookings, setTotalBookings] = useState(0);
+  const [averagePrice, setAveragePrice] = useState(0);
+  const [biggestGround, setBiggestGround] = useState("");
+
+  const [Reminders, setReminders] = useState([]);
+
+  useEffect(() => {
+    AdminServices.getBookings().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+        setReminders(response.data.bookings);
+        setTotalBookings(response.data.bookings.length);
+        //average price
+        let sum = 0;
+        response.data.bookings.forEach((booking) => {
+          sum += booking.price;
+        });
+        setAveragePrice(sum / response.data.bookings.length);
+        //get the ground with the most bookings
+
+        let grounds = response.data.bookings.map((booking) => booking.ground);
+        let counts = {};
+        let compare = 0;
+        let mostFrequent;
+        for (let i = 0, len = grounds.length; i < len; i++) {
+          let word = grounds[i];
+
+          if (counts[word] === undefined) {
+            counts[word] = 1;
+          } else {
+            counts[word] = counts[word] + 1;
+          }
+          if (counts[word] > compare) {
+            compare = counts[word];
+            mostFrequent = grounds[i];
+          }
+        }
+        setBiggestGround(mostFrequent);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    AdminServices.getGrounds().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+        setGrounds(response.data.grounds);
+        setTotalPages(Math.ceil(response.data.grounds.length / itemsPerPage));
+        setCurrentGrounds(
+          response.data.grounds.slice(indexOfFirstItem, indexOfLastItem)
+        );
+        setNumberOfGrounds(response.data.grounds.length);
+      }
+    });
+  }, []);
 
   const handleNextPage = () => {
     setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
@@ -140,29 +107,8 @@ function MainScreen() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000); 
+    }, 3000);
   }, []);
-
-  const [numberOfGrounds, setNumberOfGrounds] = useState(grounds.length);
-
-  const [averageCost, setAverageCost] = useState(
-    grounds.reduce((acc, item) => acc + item.averageRate, 0) / numberOfGrounds
-  );
-
-  const [totalCapacity, setTotalCapacity] = useState(
-    grounds.reduce((acc, item) => acc + item.capacity, 0)
-  );
-
-  const [biggestGround, setBiggestGround] = useState("");
-
-  useEffect(() => {
-    const biggestGround = grounds.reduce((prev, current) =>
-      prev.sizeWidth * prev.sizeLength > current.sizeWidth * current.sizeLength
-        ? prev
-        : current
-    );
-    setBiggestGround(biggestGround.name);
-  }, [grounds]);
 
   return (
     <div>
@@ -190,18 +136,18 @@ function MainScreen() {
             })}
             {card({
               icon: SiCrowdin,
-              number: averageCost,
-              title: "Average Cost",
+              number: totalBookings,
+              title: "Total Bookings",
             })}
             {card({
               icon: FaRegCalendarAlt,
-              number: totalCapacity,
-              title: "Total Capacity",
+              number: averagePrice,
+              title: "Average Price",
             })}
             {card({
               icon: AiOutlineDollar,
               number: biggestGround,
-              title: "Biggest Ground",
+              title: "Most Booked Ground",
             })}
           </div>
         </div>
@@ -220,7 +166,8 @@ function MainScreen() {
                     {reminder.title}
                   </h3>
                   <p className="text-left text-sm">
-                    {reminder.time} {reminder.date}
+                    {reminder.startTime} - {reminder.endTime}{" "}
+                    {new Date(reminder.date).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="flex items-center justify-between">
@@ -240,9 +187,11 @@ function MainScreen() {
               <tr>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Location</th>
-                <th className="px-4 py-2">Average Rate</th>
-                <th className="px-4 py-2">Size Width</th>
-                <th className="px-4 py-2">Size Length</th>
+                <th className="px-4 py-2">Slot Timings</th>
+                <th className="px-4 py-2">Weekend </th>
+                <th className="px-4 py-2">Weekend (after Midnight)</th>
+                <th className="px-4 py-2">Weekday (light)</th>
+                <th className="px-4 py-2">Weekday (without light)</th>
               </tr>
             </thead>
             <tbody>
@@ -250,9 +199,17 @@ function MainScreen() {
                 <tr key={index}>
                   <td className="border px-4 py-2">{ground.name}</td>
                   <td className="border px-4 py-2">{ground.location}</td>
-                  <td className="border px-4 py-2">{ground.averageRate}</td>
-                  <td className="border px-4 py-2">{ground.sizeWidth}</td>
-                  <td className="border px-4 py-2">{ground.sizeLength}</td>
+                  <td className="border px-4 py-2">{ground.slotTimings}</td>
+                  <td className="border px-4 py-2">{ground.weekend_rate}</td>
+                  <td className="border px-4 py-2">
+                    {ground.weekend_after_midnight}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {ground.weekday_with_light}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {ground.weekday_without_light}
+                  </td>
                 </tr>
               ))}
             </tbody>

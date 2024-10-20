@@ -2,7 +2,23 @@ import React from "react";
 import ThemeControl from "../../components/ThemeControl";
 import bg1 from "../../assets/bg1.jpg";
 
+import AuthServices from "../../Services/AuthServices";
+
 const Login = () => {
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const response = await AuthServices.login(username, password);
+    if (response.error == 404 || response.error == 401) {
+      alert("Invalid username or password");
+    } else {
+     
+      window.location.href = "/admin";
+    }
+  };
+
   return (
     <div className="">
       <div className="flex justify-center items-center h-screen max-sm:flex-col">
@@ -17,12 +33,14 @@ const Login = () => {
           <form className="mt-5">
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
-                Email
+                Username
               </label>
               <input
-                type="email"
+                type="text"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
-                placeholder="Enter your email"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -33,6 +51,8 @@ const Login = () => {
                 type="password"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-accent focus:border-accent sm:text-sm"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <div className="flex justify-end">
                 <a href="#" className="text-sm text-accent hover:text-accent">
@@ -43,10 +63,7 @@ const Login = () => {
             <button
               type="submit"
               className="w-full py-2 px-4 bg-accent hover:bg-accent focus:ring-4 focus:ring-accent focus:outline-none text-white font-medium text-sm rounded-md shadow-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = "/admin";
-              }}
+              onClick={handleLogin}
             >
               Login
             </button>

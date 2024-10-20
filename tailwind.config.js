@@ -80,5 +80,6 @@ export default {
       //more themes can be added here.
     ],
     darkTheme: 'smurfsDark',
+    darkTheme: false,
   },
 }

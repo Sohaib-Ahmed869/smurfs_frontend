@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import ThemeControl from "../components/ThemeControl";
 import ground from "../assets/groundedited.jpg";
@@ -7,12 +7,37 @@ import logo from "../assets/logo.png";
 import Latest from "./Latest";
 import CTA from "./CTA";
 import Footer from "./Footer";
+import BookingCalendar from "./Calendar";
 import "../App.css";
 import { IoCall } from "react-icons/io5";
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+import OpenServices from "../Services/OpenServices";
 
 const Main = () => {
+  const [grounds, setGrounds] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  //get grounds
+  useEffect(() => {
+    OpenServices.getGrounds().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+
+        setGrounds(response.data.grounds);
+      }
+    });
+  }, []);
+  useEffect(() => {
+    OpenServices.getBookings().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
  
+        setBookings(response.data.bookings);
+      }
+    });
+  }, []);
+
   return (
     <div>
       <div
@@ -27,7 +52,9 @@ const Main = () => {
         <div className="flex items-center justify-between p-20 max-sm:p-1">
           <img src={logo} alt="logo" className="h-36" />
           <ThemeControl />
-          <button className="btn btn-primary rounded-full max-sm:hidden">Book a Spot</button>
+          <button className="btn btn-primary rounded-full max-sm:hidden">
+            Book a Spot
+          </button>
         </div>
         <div className="flex flex-col items-center text-center p-20 max-sm:p-10">
           <h1 className="text-6xl text-white main-heading max-sm:text-4xl">
@@ -39,7 +66,10 @@ const Main = () => {
             need to enjoy the beautiful game.
           </p>
           <div className="flex items-center gap-3 max-sm:flex-col">
-            <button className="btn btn-primary rounded-full mt-4 text-md">
+            <button
+              className="btn btn-primary rounded-full mt-4 text-md"
+              onClick={() => window.open("tel:+923028939345", "_blank")}
+            >
               <IoCall className="mr-2" />
               Call Us Now
             </button>
@@ -77,9 +107,11 @@ const Main = () => {
       <div className="w-full p-20 max-sm:p-10 bg-black">
         <CTA />
       </div>
+      <div className="w-full p-20 max-sm:p-10 bg-black">
+        <BookingCalendar grounds={grounds} bookings={bookings} />
+      </div>
       <Latest />
       <Footer />
-      
     </div>
   );
 };

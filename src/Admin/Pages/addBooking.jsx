@@ -5,130 +5,57 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/20/solid";
 import { ImCross } from "react-icons/im";
 import { IoIosDoneAll } from "react-icons/io";
 import AdminSiderbar from "../Components/siderbar";
-
-const grounds = [
-  {
-    name: "Askari 4",
-    location: "Askari 4",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3500,
-    reserved_timings: "05:00 PM - 06:30 PM",
-    weekday_with_light: 2800,
-    weekday_without_light: 2500,
-    weekend_after_midnight: 4000,
-  },
-  {
-    name: "Rad Arena Askari 10",
-    location: "Askari 10",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3000,
-    reserved_timings: "07:00 AM - 03:00 PM",
-    weekday_with_light: 3000,
-    weekday_without_light: 3000,
-    weekend_after_midnight: 3000,
-  },
-  {
-    name: "Askari 2",
-    location: "Askari 2",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 2400,
-    reserved_timings: "05:00 PM - 07:00 PM",
-    weekday_with_light: 2400,
-    weekday_without_light: 2000,
-    weekend_after_midnight: 2400,
-  },
-  {
-    name: "DHA-1 Roots",
-    location: "DHA-1 Roots",
-    capacity: 50000,
-    averageRate: 500,
-    sizeWidth: 100,
-    sizeLength: 100,
-    slotTimings: "90",
-    weekend_rate: 3600,
-    reserved_timings: "07:00 AM - 03:00 PM",
-    weekday_with_light: 3600,
-    weekday_without_light: 3000,
-    weekend_after_midnight: 3200,
-  },
-];
-
-const Reminders = [
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 10",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Reminder",
-    time: "10:00 AM",
-    date: "25th September 2024",
-    ground: "Askari 2",
-    customerName: "John Doe",
-    price: 500,
-  },
-];
+import AdminServices from "../../Services/AdminServices";
 
 const AddBooking = () => {
+  const [grounds, setGrounds] = useState([]);
+
+  const [selectedGroundReminders, setSelectedGroundReminders] = useState([]);
+
+  const [Reminders, setReminders] = useState([]);
+  const [filteredReminders, setFilteredReminders] = useState([]);
+
   const [confirmModal, setConfirmModal] = useState(false);
   const [alreadyBookedModal, setAlreadyBookedModal] = useState(false);
   const [bookingDoneModal, setBookingDoneModal] = useState(false);
-  const [selectedGround, setSelectedGround] = useState(grounds[0]);
+  const [selectedGround, setSelectedGround] = useState({});
 
   const handleSave = () => {
     setConfirmModal(true);
   };
 
-  const checkBooking = () => {
-    const time = document.querySelector('input[type="time"]').value;
-    const date = document.querySelector('input[type="date"]').value;
-    const ground = selectedGround.name;
-    const isBooked = Reminders.some(
-      (reminder) =>
-        reminder.time === time &&
-        reminder.date === date &&
-        reminder.ground === ground
-    );
-    if (isBooked) {
-      setAlreadyBookedModal(true);
-    } else {
-      setBookingDoneModal(true);
-    }
+  const getGrounds = () => {
+    AdminServices.getGrounds().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+        console.log(response);
+        setGrounds(response.data.grounds);
+        setSelectedGround(response.data.grounds[0]);
+      }
+    });
   };
 
-  const [selectedGroundReminders, setSelectedGroundReminders] = useState([]);
+  useEffect(() => {
+    getGrounds();
+  }, []);
 
+  const getBookings = () => {
+    AdminServices.getBookings().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+        console.log(response);
+        setReminders(response.data.bookings);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getBookings();
+  }, []);
+
+  //get bookings of selected ground
   useEffect(() => {
     setSelectedGroundReminders(
       Reminders.filter((reminder) => reminder.ground === selectedGround.name)
@@ -136,11 +63,11 @@ const AddBooking = () => {
   }, [selectedGround]);
 
   return (
-    <div className="p-20 max-sm:p-5">
+    <div className="p-20 max-sm:p-5 bg-gray-100">
       <ThemeControl />
       <AdminSiderbar />
-      <div className="flex items-center justify-between gap-10 max-sm:flex-col max-sm:flex-col-reverse">
-        <div className="mt-4 w-1/2 border p-4 rounded-xl shadow-sm max-sm:w-full">
+      <div className="flex items-center justify-between gap-10 max-sm:flex-col">
+        <div className="mt-4 w-1/2 border p-4 rounded-xl shadow-sm max-sm:w-full bg-white">
           <h1 className="text-2xl font-bold">Ground Information</h1>
           <table className="table w-full mt-4">
             <tbody>
@@ -226,9 +153,9 @@ const AddBooking = () => {
       </div>
       <div className="mt-10 max-sm:hidden">
         <h1 className="text-2xl font-bold">Reminders</h1>
-        <table className="table w-full mt-4">
+        <table className="table text-lg w-full mt-4">
           <thead>
-            <tr>
+            <tr className="bg-secondary text-white text-md">
               <th>Title</th>
               <th>Time</th>
               <th>Date</th>
@@ -248,8 +175,8 @@ const AddBooking = () => {
             {selectedGroundReminders.map((reminder, index) => (
               <tr key={index}>
                 <td>{reminder.title}</td>
-                <td>{reminder.time}</td>
-                <td>{reminder.date}</td>
+                <td>{new Date(reminder.date).toLocaleTimeString()}</td>
+                <td>{new Date(reminder.date).toDateString()}</td>
                 <td>{reminder.ground}</td>
                 <td>{reminder.customerName}</td>
                 <td>{reminder.price}</td>

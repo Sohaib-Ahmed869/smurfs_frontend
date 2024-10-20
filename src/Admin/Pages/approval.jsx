@@ -1,73 +1,81 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ThemeControl from "../../components/ThemeControl";
 import AdminSiderbar from "../Components/siderbar";
 import { IoIosDoneAll } from "react-icons/io";
-import { Modal } from "react-bootstrap";
-const Reminders = [
-  {
-    title: "Booking Request",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Request",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 4",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Request",
-    time: "10:00 AM",
-    date: "12th August 2021",
-    ground: "Askari 10",
-    customerName: "John Doe",
-    price: 500,
-  },
-  {
-    title: "Booking Request",
-    time: "10:00 AM",
-    date: "25th September 2024",
-    ground: "Askari 2",
-    customerName: "John Doe",
-    price: 500,
-  },
-];
-
+import AdminServices from "../../Services/AdminServices";
+import { CiSquareQuestion } from "react-icons/ci";
+import { MdOutlineHourglassEmpty } from "react-icons/md";
 const Approval = () => {
-  const [show, setShow] = React.useState(false);
-  const [approvedModal, setApprovedModal] = React.useState(false);
-  const [selectedReminder, setSelectedReminder] = React.useState({});
-  const handleClose = () => setShow(false);
+  const [show, setShow] = useState(false);
+  const [approvedModal, setApprovedModal] = useState(false);
+  const [selectedReminder, setSelectedReminder] = useState({});
+
   const handleShow = (reminder) => {
     setSelectedReminder(reminder);
     setShow(true);
   };
+
+  const [Reminders, setReminders] = useState([]);
+
+  const getBookings = () => {
+    AdminServices.getBookings().then((response) => {
+      if (response.error) {
+        console.log(response.error);
+      } else {
+        setReminders(
+          response.data.bookings.filter(
+            (booking) => booking.status === "Unapproved"
+          )
+        );
+      }
+    });
+  };
+
+  useEffect(() => {
+    getBookings();
+  }, []);
+
+  const handleApprove = async () => {
+    const response = await AdminServices.markAsPaid(selectedReminder._id);
+    if (response.error) {
+      console.log(response.error);
+    } else {
+      setApprovedModal(true);
+      //get updated bookings
+      getBookings();
+    }
+  };
+
   return (
     <div>
       <div className="flex">
         <AdminSiderbar />
         <div className="w-full p-20 max-sm:p-5">
-          <ThemeControl />
-          <h1 className="text-4xl mt-4 mb-4 main-heading">Booking Requests</h1>
+          <h1 className="text-4xl mt-4 mb-4 main-heading flex items-center">
+            <CiSquareQuestion className="h-10 w-10 text-secondary mr-4" />
+            Booking Requests</h1>
+          {Reminders.length === 0 && (
+            <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
+              <MdOutlineHourglassEmpty className="text-9xl text-gray-300" />
+              <h1 className="text-xl">No Booking Requests waiting for approval</h1>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 sm:grid-cols-1">
             {Reminders.map((reminder) => (
               <div
                 className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center cursor-pointer hover:transform hover:scale-105 transition-transform"
-                key={reminder.date}
+                key={reminder._id}
                 onClick={() => handleShow(reminder)}
               >
                 <div>
-                  <h1 className="text-xl">{reminder.title}</h1>
+                  <h1 className="text-xl">Reminder</h1>
                   <p>
-                    <span className="font-semibold">Time:</span> {reminder.time}
+                    <span className="font-semibold">Time:</span>{" "}
+                    {reminder.startTime} - {reminder.endTime}
                   </p>
                   <p>
-                    <span className="font-semibold">Date:</span> {reminder.date}
+                    <span className="font-semibold">Date:</span>{" "}
+                    {new Date(reminder.date).toDateString()}
                   </p>
                   <p>
                     <span className="font-semibold">Ground:</span>{" "}
@@ -76,6 +84,14 @@ const Approval = () => {
                   <p>
                     <span className="font-semibold">Customer Name:</span>{" "}
                     {reminder.customerName}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Email:</span>{" "}
+                    {reminder.email}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Phone:</span>{" "}
+                    {reminder.phone}
                   </p>
                   <p>
                     <span className="font-semibold">Price:</span>{" "}
@@ -87,68 +103,77 @@ const Approval = () => {
           </div>
         </div>
       </div>
-      {(show || approvedModal) && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-          onClick={() => {
-            setShow(false);
-            setApprovedModal(false);
-          }}
-        >
-          <div className="bg-white p-4 rounded-lg"></div>
+
+      {/* Modal for Booking Details */}
+      {show && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <div className="modal-header flex justify-between items-center">
+              <h3 className="font-bold text-lg">{selectedReminder.title}</h3>
+              <button
+                className="btn btn-sm btn-circle"
+                onClick={() => setShow(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>
+                <span className="font-semibold">Time:</span>{" "}
+                {selectedReminder.startTime}
+              </p>
+              <p>
+                <span className="font-semibold">Date:</span>{" "}
+                {selectedReminder.date}
+              </p>
+              <p>
+                <span className="font-semibold">Ground:</span>{" "}
+                {selectedReminder.ground}
+              </p>
+              <p>
+                <span className="font-semibold">Customer Name:</span>{" "}
+                {selectedReminder.customerName}
+              </p>
+              <p>
+                <span className="font-semibold">Price:</span>{" "}
+                {selectedReminder.price}
+              </p>
+              <button
+                className="btn btn-primary mt-4 w-full"
+                onClick={() => {
+                  handleApprove();
+                  setShow(false);
+                }}
+              >
+                Approve
+              </button>
+            </div>
+          </div>
         </div>
       )}
-      <Modal
-        show={show}
-        onHide={handleClose}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10 rounded-lg  w-1/3"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedReminder.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            <span className="font-semibold">Time:</span> {selectedReminder.time}
-          </p>
-          <p>
-            <span className="font-semibold">Date:</span> {selectedReminder.date}
-          </p>
-          <p>
-            <span className="font-semibold">Ground:</span>{" "}
-            {selectedReminder.ground}
-          </p>
-          <p>
-            <span className="font-semibold">Customer Name:</span>{" "}
-            {selectedReminder.customerName}
-          </p>
-          <p>
-            <span className="font-semibold">Price:</span>{" "}
-            {selectedReminder.price}
-          </p>
-          <button className="btn btn-primary mt-4 btn-md w-full"
-            onClick={() => {
-              setApprovedModal(true);
-              setShow(false);
-            }}
-          >Approve</button>
-        </Modal.Body>
-      </Modal>
 
-      <Modal
-        show={approvedModal}
-        onHide={() => setApprovedModal(false)}
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10 rounded-lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Approved</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="flex items-center justify-center">
-            <IoIosDoneAll className="text-9xl text-green-500" />
+      {/* Modal for Approved Confirmation */}
+      {approvedModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <div className="modal-header flex justify-between items-center">
+              <h3 className="font-bold text-lg">Approved</h3>
+              <button
+                className="btn btn-sm btn-circle"
+                onClick={() => setApprovedModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="flex items-center justify-center">
+                <IoIosDoneAll className="text-9xl text-green-500" />
+              </div>
+              <p className="text-center text-2xl">Booking Approved</p>
+            </div>
           </div>
-          <p className="text-center text-2xl">Booking Approved</p>
-        </Modal.Body>
-      </Modal>
+        </div>
+      )}
     </div>
   );
 };
