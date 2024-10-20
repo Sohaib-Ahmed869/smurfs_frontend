@@ -54,7 +54,7 @@ const AdminServices = {
   },
   addBooking: async (booking) => {
     try {
-      const response = await axios.post(`${URL}/booking`, booking, {
+      const response = await axios.post(`${URL}/booking/createBooking`, booking, {
         headers: {
           Authorization: `${localStorage.getItem("token")}`,
         },

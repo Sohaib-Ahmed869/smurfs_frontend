@@ -6,6 +6,7 @@ import AddBooking from "./Admin/Pages/addBooking";
 import Approval from "./Admin/Pages/approval";
 import Payments from "./Admin/Pages/payments";
 import Login from "./Admin/Pages/login";
+import Bookings from "./Admin/Pages/viewBooking";
 
 import Main from "./home/Main";
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="approval" element={<Approval />} />
           <Route path="payments" element={<Payments />} />
           <Route path="login" element={<Login />} />
+          <Route path="view-bookings" element={<Bookings />} />
         </Route>
       </Route>
       </Routes>

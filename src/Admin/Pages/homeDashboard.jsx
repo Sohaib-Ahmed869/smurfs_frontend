@@ -51,13 +51,26 @@ function MainScreen() {
         console.log(response.error);
       } else {
         setReminders(response.data.bookings);
+        //only keep the reminders that are unapproved
+        let today = new Date().toLocaleDateString();
+        let filteredReminders = response.data.bookings.filter(
+          (booking) => booking.status === "Unapproved" 
+        );
+        setReminders(filteredReminders);
+
         setTotalBookings(response.data.bookings.length);
         //average price
         let sum = 0;
         response.data.bookings.forEach((booking) => {
           sum += booking.price;
         });
-        setAveragePrice(sum / response.data.bookings.length);
+        if(response.data.bookings.length === 0){
+          setAveragePrice(0);
+        }
+        else 
+        {
+        setAveragePrice((sum / response.data.bookings.length).toFixed(2));
+        }
         //get the ground with the most bookings
 
         let grounds = response.data.bookings.map((booking) => booking.ground);
@@ -153,7 +166,7 @@ function MainScreen() {
         </div>
       </div>
       <div className="flex items-start justify-center gap-10 p-10 lg:max-h-80 max-sm:flex-col">
-        <div className="w-2/4 h-96 p-4 rounded-lg max-sm:w-full">
+        <div className="w-1/3 h-96 p-4 rounded-lg max-sm:w-full">
           <h2 className="text-left text-xl font-bold flex items-center gap-2">
             <IoMdNotifications className="inline-block text-yellow-300 text-3xl" />
             Reminders
@@ -181,7 +194,7 @@ function MainScreen() {
             ))}
           </div>
         </div>
-        <div className="w-2/4 max-sm:hidden">
+        <div className="w-2/3 max-sm:hidden">
           <table className="table-auto overflow-y-auto mx-auto">
             <thead>
               <tr>
